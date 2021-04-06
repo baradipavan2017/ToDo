@@ -1,31 +1,31 @@
 class Task {
-  int _id;
-  String _title;
-  DateTime _date;
-  String _priority;
+  int id;
+  String title;
+  DateTime date;
+  String priority;
 
   Task([
-    this._id,
-    this._title,
-    this._date,
-    this._priority,
+    this.id,
+    this.title,
+    this.date,
+    this.priority,
   ]);
   Task.withId([
-    this._id,
-    this._title,
-    this._date,
-    this._priority,
+    this.id,
+    this.title,
+    this.date,
+    this.priority,
   ]);
 
   //CONVERTING OJECTS TO MAP
   Map<String, dynamic> toMap() {
     final map = Map<String, dynamic>();
-    if (_id != null) {
-      map['id'] = _id;
+    if (id != null) {
+      map['id'] = id;
     }
-    map['title'] = _title;
-    map['date'] = _date.toIso8601String();
-    map['priority'] = _priority;
+    map['title'] = title;
+    map['date'] = date.toIso8601String();
+    map['priority'] = priority;
     return map;
   }
 

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:todo_1/screens/add_task.dart';
 
 class ToDoListScreen extends StatelessWidget {
+
+  
   final bool _value = false;
   Widget _buildTask(int index) {
     return Padding(
