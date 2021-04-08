@@ -3,19 +3,16 @@ class Task {
   String title;
   DateTime date;
   String priority;
+  int status;
 
-  Task([
+  Task({this.title, this.date, this.priority, this.status});
+  Task.withId({
     this.id,
     this.title,
     this.date,
     this.priority,
-  ]);
-  Task.withId([
-    this.id,
-    this.title,
-    this.date,
-    this.priority,
-  ]);
+    this.status,
+  });
 
   //CONVERTING OJECTS TO MAP
   Map<String, dynamic> toMap() {
@@ -26,16 +23,18 @@ class Task {
     map['title'] = title;
     map['date'] = date.toIso8601String();
     map['priority'] = priority;
+    map['status'] = status;
     return map;
   }
 
   //EXTRACTING OBJECTS
   factory Task.fromMap(Map<String, dynamic> map) {
     return Task.withId(
-      map['id'],
-      map['title'],
-      DateTime.parse(map['date']),
-      map['priority'],
+      id: map['id'],
+      title: map['title'],
+      date: DateTime.parse(map['date']),
+      priority: map['priority'],
+      status: map['status'],
     );
   }
 }

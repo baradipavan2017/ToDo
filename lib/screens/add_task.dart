@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:todo_1/helpers/database_helper.dart';
+import 'package:todo_1/model/todo_model.dart';
 
 class AddTask extends StatefulWidget {
-  static const routeName = '/add_task';
+  final Function updateTaskList;
+  final Task task;
+  AddTask({this.task, this.updateTaskList});
+
   @override
   _AddTaskState createState() => _AddTaskState();
 }
@@ -12,15 +17,20 @@ class _AddTaskState extends State<AddTask> {
   String _title = '';
   String _priority;
   DateTime _dateTime = DateTime.now();
-  // final _controller = TextEditingController();
+
   TextEditingController _dateController = TextEditingController();
   final DateFormat _dateFormat = DateFormat('dd MMMM yyyy');
 
   final List<String> _priorities = ['Low', 'Medium', 'High'];
 
   @override
-  void initialState() {
+  void initState() {
     super.initState();
+    if (widget.task != null) {
+      _title = widget.task.title;
+      _priority = widget.task.priority;
+      _dateTime = widget.task.date;
+    }
     _dateController.text = _dateFormat.format(_dateTime);
   }
 
@@ -46,14 +56,30 @@ class _AddTaskState extends State<AddTask> {
     }
   }
 
+  _delete() {
+    DatabaseHelper.instance.deleteTask(widget.task.id);
+    widget.updateTaskList();
+    Navigator.pop(context);
+  }
+
   //validating the form
   _submit() {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
     }
-    print('$_title,$_dateTime,$_priority');
-    //TODO:Inserting task in databse
-    Navigator.of(context).pop();
+    //Inserting task in databse
+    Task task = Task(title: _title, date: _dateTime, priority: _priority);
+    if (widget.task == null) {
+      task.status = 0;
+      DatabaseHelper.instance.insertTask(task);
+    } else {
+      //updating database
+      task.id = widget.task.id;
+      task.status = widget.task.status;
+      DatabaseHelper.instance.updateTask(task);
+    }
+    widget.updateTaskList();
+    Navigator.pop(context);
   }
 
   @override
@@ -80,7 +106,7 @@ class _AddTaskState extends State<AddTask> {
                   height: 20.0,
                 ),
                 Text(
-                  'Add Task',
+                  widget.task == null ? 'Add Task' : 'Update Task',
                   style: TextStyle(
                       color: Colors.black,
                       fontSize: 35.0,
@@ -108,7 +134,6 @@ class _AddTaskState extends State<AddTask> {
                             input.trim().isEmpty ? 'Please enter a task' : null,
                         onSaved: (input) => _title = input,
                         initialValue: _title,
-                        keyboardType: TextInputType.text,
                       ),
                       SizedBox(
                         height: 20.0,
@@ -176,13 +201,32 @@ class _AddTaskState extends State<AddTask> {
                         ),
                         child: TextButton(
                           child: Text(
-                            'Add task',
+                            widget.task == null ? 'Add Task' : 'Update Task',
                             style:
                                 TextStyle(color: Colors.white, fontSize: 20.0),
                           ),
                           onPressed: _submit,
                         ),
-                      )
+                      ),
+                      widget.task != null
+                          ? Container(
+                              // margin: EdgeInsets.symmetric(vertical: 20.0),
+                              height: 60.0,
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(30.0),
+                                color: Theme.of(context).primaryColor,
+                              ),
+                              child: TextButton(
+                                child: Text(
+                                  'Delete task',
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 20.0),
+                                ),
+                                onPressed: _delete,
+                              ),
+                            )
+                          : SizedBox.shrink(),
                     ],
                   ),
                 )
